@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Punto M — Dashboard de Contenidos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-inner">
+        <div class="header-brand">
+          <span class="brand-icon">✨</span>
+          <div>
+            <h1 class="brand-name">Punto M</h1>
+            <p class="brand-sub">Dashboard de Contenidos</p>
+          </div>
+        </div>
+        <div class="header-controls">
+          <select id="week-selector" class="week-selector">
+            <option value="all">Todas las semanas</option>
+          </select>
+          <button id="refresh-btn" class="btn-refresh" title="Actualizar datos desde el sheet">↻</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- TAB NAVIGATION -->
+    <nav class="tab-nav">
+      <div class="tab-nav-scroll">
+        <button class="tab-btn active" data-tab="resumen">Resumen</button>
+        <button class="tab-btn" data-tab="estrategia">Estrategia</button>
+        <button class="tab-btn" data-tab="reels">Reels</button>
+        <button class="tab-btn" data-tab="whatsapp">WhatsApp</button>
+        <button class="tab-btn" data-tab="stories">Stories</button>
+        <button class="tab-btn" data-tab="carruseles">Carruseles</button>
+        <button class="tab-btn" data-tab="emails">Emails</button>
+        <button class="tab-btn" data-tab="calendario">Calendario</button>
+        <button class="tab-btn" data-tab="performance">Performance</button>
+        <button class="tab-btn" data-tab="productos">Productos</button>
+      </div>
+    </nav>
+
+    <!-- LOADING -->
+    <div id="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando datos del sheet...</p>
+    </div>
+
+    <!-- ERROR -->
+    <div id="error-state" class="error-state hidden">
+      <p class="state-icon">⚠️</p>
+      <h3>No se pudo conectar al sheet</h3>
+      <p id="error-message" class="error-msg"></p>
+      <button onclick="loadAllData()" class="btn btn-primary">Reintentar</button>
+      <p class="error-hint">Verificá que la URL del Apps Script esté correcta en <code>app.js → CONFIG.API_URL</code></p>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main id="content" class="content hidden"></main>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast hidden">✓ Copiado al portapapeles</div>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
