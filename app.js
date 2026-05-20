@@ -12,7 +12,8 @@ const CONFIG = {
     WHATSAPP:   '04_WHATSAPP',
     STORIES:    '05_STORIES',
     EMAILS:     '06_EMAILS',
-    CALENDARIO: '07_CALENDARIO_COMERCIAL'
+    CALENDARIO: '07_CALENDARIO_COMERCIAL',
+    CARRUSELES: '08_CARRUSELES'
   }
 };
 
@@ -20,7 +21,7 @@ const CONFIG = {
 const state = {
   data: {
     estrategia: [], productos: [], reels: [],
-    whatsapp: [], stories: [], emails: [], calendario: []
+    whatsapp: [], stories: [], emails: [], calendario: [], carruseles: []
   },
   currentTab: 'resumen',
   selectedSemana: 'all',
@@ -43,13 +44,14 @@ async function loadAllData() {
     if (!json.success) throw new Error(json.error || 'Error del servidor');
 
     const d = json.data;
-    state.data.estrategia = d[CONFIG.TABS.ESTRATEGIA] || [];
+    state.data.estrategia  = d[CONFIG.TABS.ESTRATEGIA] || [];
     state.data.productos   = d[CONFIG.TABS.PRODUCTOS]  || [];
     state.data.reels       = d[CONFIG.TABS.REELS]      || [];
     state.data.whatsapp    = d[CONFIG.TABS.WHATSAPP]   || [];
     state.data.stories     = d[CONFIG.TABS.STORIES]    || [];
     state.data.emails      = d[CONFIG.TABS.EMAILS]     || [];
     state.data.calendario  = d[CONFIG.TABS.CALENDARIO] || [];
+    state.data.carruseles  = d[CONFIG.TABS.CARRUSELES] || [];
 
     state.error = null;
     populateWeekSelector();
@@ -360,12 +362,58 @@ function renderStories() {
 // TAB: CARRUSELES
 // ============================================================
 function renderCarruseles() {
-  return '<div class="page">' +
-    '<div class="page-header"><h2 class="page-title">Carruseles</h2></div>' +
-    '<div class="empty-state"><p class="empty-icon">🎨</p>' +
-    '<h3>Próximamente</h3>' +
-    '<p>Agregá la tab <strong>08_CARRUSELES</strong> al sheet y los carruseles aparecerán aquí automáticamente.</p>' +
-    '</div></div>';
+  var rows = filterBySemana(state.data.carruseles);
+  if (!rows.length) return '<div class="page"><div class="page-header"><h2 class="page-title">Carruseles</h2></div>' + emptyState('Sin carruseles para esta semana.') + '</div>';
+
+  var tipoColor = {
+    'LISTICLE': 'sage', 'ANTES_DESPUES': 'terracota', 'GUIA': 'verde',
+    'COMPARATIVA': 'beige', 'INSPIRACION': 'sage', 'MITOS': 'terracota'
+  };
+
+  var SLIDE_KEYS = ['slide_1','slide_2','slide_3','slide_4','slide_5','slide_6','slide_7','slide_cta'];
+  var SLIDE_LABELS = ['Slide 1 — Portada','Slide 2','Slide 3','Slide 4','Slide 5','Slide 6','Slide 7','Última slide — CTA'];
+
+  return '<div class="page"><div class="page-header"><h2 class="page-title">Carruseles</h2></div>' +
+    rows.map(function(r) {
+      var slides = SLIDE_KEYS.map(function(k, i) {
+        if (!r[k]) return '';
+        var isFirst = i === 0;
+        var isLast  = k === 'slide_cta';
+        return '<div class="carrusel-slide' + (isFirst ? ' slide-portada' : '') + (isLast ? ' slide-cta' : '') + '">' +
+          '<span class="slide-num">' + SLIDE_LABELS[i] + '</span>' +
+          '<p class="slide-text">' + escHtml(r[k]).replace(/\n/g, '<br>') + '</p>' +
+        '</div>';
+      }).join('');
+
+      var copyAll = SLIDE_KEYS.map(function(k, i) {
+        return r[k] ? (SLIDE_LABELS[i] + ':\n' + r[k]) : '';
+      }).filter(Boolean).join('\n\n') +
+        (r.caption  ? '\n\n---\nCaption:\n' + r.caption  : '') +
+        (r.hashtags ? '\n\n' + r.hashtags : '');
+
+      return '<div class="carrusel-card card">' +
+        '<div class="card-header">' +
+          '<div>' +
+            '<span class="carrusel-fecha">' + escHtml(r.fecha || '') + '</span>' +
+            '<h3 class="card-title">' + escHtml(r.producto || r.tipo_carrusel || 'Carrusel') + '</h3>' +
+          '</div>' +
+          '<div class="card-badges">' +
+            (r.tipo_carrusel ? badge(r.tipo_carrusel.replace('_', ' '), tipoColor[r.tipo_carrusel] || 'beige') : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="card-body">' +
+          (r.objetivo ? '<p class="objetivo-text">' + escHtml(r.objetivo) + '</p>' : '') +
+          '<div class="carrusel-slides">' + slides + '</div>' +
+          (r.caption ? '<div class="caption-box"><span class="field-label">Caption</span><pre class="caption-text">' + escHtml(r.caption) + '</pre></div>' : '') +
+          (r.hashtags ? '<div class="hashtags-box"><span class="field-label">Hashtags</span><p class="hashtags-text">' + escHtml(r.hashtags) + '</p></div>' : '') +
+          (r.tips_diseno ? '<div class="tips-box"><span class="field-label">Tips de diseño</span><p class="tips-text">' + escHtml(r.tips_diseno) + '</p></div>' : '') +
+          (r.link_fotos ? '<a href="' + escAttr(r.link_fotos) + '" target="_blank" class="product-link">📁 Ver fotos del producto →</a>' : '') +
+          '<div class="card-actions">' +
+            '<button class="btn btn-primary btn-copy" data-copy="' + escAttr(copyAll) + '">📋 Copiar todo</button>' +
+            (r.caption ? '<button class="btn btn-secondary btn-copy" data-copy="' + escAttr((r.caption || '') + (r.hashtags ? '\n\n' + r.hashtags : '')) + '">📋 Copiar caption</button>' : '') +
+          '</div>' +
+        '</div></div>';
+    }).join('') + '</div>';
 }
 
 // ============================================================

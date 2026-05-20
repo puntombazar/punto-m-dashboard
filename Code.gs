@@ -13,7 +13,8 @@ var TABS = [
   "04_WHATSAPP",
   "05_STORIES",
   "06_EMAILS",
-  "07_CALENDARIO_COMERCIAL"
+  "07_CALENDARIO_COMERCIAL",
+  "08_CARRUSELES"
 ];
 
 // ---- GET: leer datos ----------------------------------------

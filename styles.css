@@ -745,6 +745,77 @@ details[open] .performance-summary::before { transform: rotate(90deg); }
 .cal-productos { font-size: 13px; color: var(--texto-suave); }
 .cal-notas { font-size: 12px; color: var(--texto-muted); }
 
+/* ---- Carruseles ------------------------------------------ */
+.carrusel-fecha {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sage);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  display: block;
+  margin-bottom: 4px;
+}
+.carrusel-slides {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+}
+.carrusel-slide {
+  background: var(--off-white);
+  border: 1px solid var(--borde-light);
+  border-radius: var(--radio-sm);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.slide-portada {
+  background: var(--sage-faint);
+  border-left: 3px solid var(--sage);
+}
+.slide-cta {
+  background: var(--terracota-faint);
+  border-left: 3px solid var(--terracota-light);
+}
+.slide-num {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--texto-muted);
+}
+.slide-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--texto);
+}
+.caption-box, .hashtags-box, .tips-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.caption-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--texto);
+  background: var(--off-white);
+  border: 1px solid var(--borde-light);
+  border-radius: var(--radio-sm);
+  padding: 12px 16px;
+}
+.hashtags-text {
+  font-size: 13px;
+  color: var(--verde-medio);
+  line-height: 1.7;
+}
+.tips-text {
+  font-size: 13px;
+  color: var(--texto-suave);
+  font-style: italic;
+  line-height: 1.6;
+}
+
 /* ---- Productos ------------------------------------------- */
 .productos-grid {
   display: grid;
