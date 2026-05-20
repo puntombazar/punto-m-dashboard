@@ -4,7 +4,7 @@
 
 // ---- CONFIG — actualizar API_URL después del deploy --------
 const CONFIG = {
-  API_URL: 'API_URL: 'https://script.google.com/macros/s/AKfycbwosjAjNTT_WVjhAeonZwOC6PuxQESdTbtGrgBY3I53mf5xjHotDUIuLnr7Vtx4DfRZzA/exec',',
+  API_URL: 'https://script.google.com/macros/s/AKfycbwosjAjNTT_WVjhAeonZwOC6PuxQESdTbtGrgBY3I53mf5xjHotDUIuLnr7Vtx4DfRZzA/exec',
   TABS: {
     ESTRATEGIA: '01_ESTRATEGIA_MENSUAL',
     PRODUCTOS:  '02_PRODUCTOS',
@@ -155,7 +155,7 @@ function renderResumen() {
       '<p class="page-subtitle">' + escHtml(semanaLabel) + '</p>' +
     '</div>' +
 
-    (msg ? '<div class="summary-card"><p style="font-family:var(--font-serif);font-size:18px;color:var(--verde);font-style:italic">“' + escHtml(msg) + '”</p></div>' : '') +
+    (msg ? '<div class="summary-card"><p style="font-family:var(--font-serif);font-size:18px;color:var(--verde);font-style:italic">"' + escHtml(msg) + '"</p></div>' : '') +
 
     '<div class="stats-grid">' +
       statCard(reels.length,   'Reels') +
