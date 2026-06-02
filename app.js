@@ -13,7 +13,8 @@ WHATSAPP: '04_WHATSAPP',
 STORIES: '05_STORIES',
 EMAILS: '06_EMAILS',
 CALENDARIO: '07_CALENDARIO_COMERCIAL',
-CARRUSELES: '08_CARRUSELES'
+CARRUSELES: '08_CARRUSELES',
+WEB: '09_WEB'
 }
 };
 
@@ -21,7 +22,7 @@ CARRUSELES: '08_CARRUSELES'
 const state = {
 data: {
 estrategia: [], productos: [], reels: [],
-whatsapp: [], stories: [], emails: [], calendario: [], carruseles: []
+whatsapp: [], stories: [], emails: [], calendario: [], carruseles: [], web: []
 },
 currentTab: 'resumen',
 selectedSemana: 'all',
@@ -52,6 +53,7 @@ state.data.stories = d[CONFIG.TABS.STORIES] || [];
 state.data.emails = d[CONFIG.TABS.EMAILS] || [];
 state.data.calendario = d[CONFIG.TABS.CALENDARIO] || [];
 state.data.carruseles = d[CONFIG.TABS.CARRUSELES] || [];
+state.data.web = d[CONFIG.TABS.WEB] || [];
 
 state.error = null;
 populateWeekSelector();
@@ -80,7 +82,7 @@ window.scrollTo({ top: 0, behavior: 'smooth' });
 function populateWeekSelector() {
 var weeks = [];
 var seen = {};
-[].concat(state.data.reels, state.data.whatsapp, state.data.stories, state.data.emails)
+[].concat(state.data.reels, state.data.whatsapp, state.data.stories, state.data.emails, state.data.web)
 .forEach(function(r) {
 if (r.semana && !seen[r.semana]) { weeks.push(r.semana); seen[r.semana] = true; }
 });
@@ -112,6 +114,7 @@ content.classList.remove('hidden');
 var map = {
 resumen: renderResumen,
 estrategia: renderEstrategia,
+web: renderWeb,
 reels: renderReels,
 whatsapp: renderWhatsapp,
 stories: renderStories,
@@ -126,6 +129,66 @@ var fn = map[state.currentTab];
 content.innerHTML = fn ? fn() : '';
 bindCopyButtons();
 bindPerformanceInputs();
+}
+
+// ============================================================
+// TAB: WEB
+// ============================================================
+function renderWeb() {
+var rows = filterBySemana(state.data.web).slice().sort(function(a, b) {
+return parseFecha(a.fecha) - parseFecha(b.fecha);
+});
+if (!rows.length) return emptyState('Sin recomendaciones web para esta semana.');
+
+var prioColor = { ALTA: 'terracota', MEDIA: 'sage', BAJA: 'beige' };
+var actionColor = {
+Crear: 'verde',
+Actualizar: 'sage',
+Reordenar: 'beige',
+Ocultar: 'terracota',
+Reemplazar: 'terracota',
+Revisar: 'sage'
+};
+
+return '<div class="page"><div class="page-header"><h2 class="page-title">Web</h2></div>' +
+rows.map(function(r) {
+var titleParts = [r.seccion_recife, r.pagina].filter(Boolean).join(' · ');
+var subtitleParts = [r.tipo_elemento, r.ubicacion_actual].filter(Boolean).join(' · ');
+var ctaLink = normalizeWebLink(r.cta_link);
+return '<div class="web-card card">' +
+'<div class="card-header">' +
+'<div>' +
+'<span class="web-fecha">' + escHtml(r.fecha || '') + (r.semana ? ' · ' + escHtml(r.semana) : '') + '</span>' +
+'<h3 class="card-title">' + escHtml(titleParts || 'Recomendación web') + '</h3>' +
+(subtitleParts ? '<p class="web-subtitle">' + escHtml(subtitleParts) + '</p>' : '') +
+'</div>' +
+'<div class="card-badges">' +
+(r.prioridad ? badge(r.prioridad, prioColor[r.prioridad] || 'beige') : '') +
+(r.accion ? badge(r.accion, actionColor[r.accion] || 'sage') : '') +
+(r.estado ? badge(r.estado, 'verde') : '') +
+'</div>' +
+'</div>' +
+'<div class="card-body">' +
+fieldRow('Objetivo', r.objetivo, true) +
+fieldRow('Mensaje estratégico', r.mensaje_estrategico) +
+fieldRow('Producto o categoría', r.producto_o_categoria) +
+fieldRow('Copy título', r.copy_titulo) +
+fieldRow('Copy subtítulo', r.copy_subtitulo) +
+fieldRow('CTA texto', r.cta_texto) +
+(ctaLink ? '<div class="field-row"><span class="field-label">CTA link</span><a href="' + escAttr(ctaLink) + '" target="_blank" class="product-link">' + escHtml(ctaLink) + '</a></div>' : '') +
+fieldRow('Imagen requerida', r.imagen_requerida) +
+fieldRow('Problema detectado', r.problema_detectado) +
+fieldRow('Oportunidad detectada', r.oportunidad_detectada) +
+fieldRow('Observaciones', r.observaciones) +
+'</div></div>';
+}).join('') + '</div>';
+}
+
+function normalizeWebLink(link) {
+if (!link) return '';
+var clean = link.toString().trim();
+if (clean.indexOf('/') === 0) return 'https://www.puntombazar.com.ar' + clean;
+return clean;
 }
 
 // ============================================================
