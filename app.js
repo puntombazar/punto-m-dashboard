@@ -4,7 +4,7 @@
 
 // ---- CONFIG — actualizar API_URL después del deploy --------
 const CONFIG = {
-API_URL: 'https://script.google.com/macros/s/AKfycbx0kBq2SWsBdI0Lv2ELmu1YS2V0TPOnYAScNdhtzZFOMLlAGmbqBLsg9S3MaJpwS7OI/exec',
+API_URL: 'https://script.google.com/macros/s/AKfycbwosjAjNTT_WVjhAeonZwOC6PuxQESdTbtGrgBY3I53mf5xjHotDUIuLnr7Vtx4DfRZzA/exec',
 TABS: {
 ESTRATEGIA: '01_ESTRATEGIA_MENSUAL',
 PRODUCTOS: '02_PRODUCTOS',
