@@ -52,15 +52,21 @@ async function loadAllData() {
     if (!json.success) throw new Error(json.error || 'Error del servidor');
 
     var d = json.data;
-    state.data.estrategia = d[CONFIG.TABS.ESTRATEGIA] || [];
-    state.data.productos  = d[CONFIG.TABS.PRODUCTOS]  || [];
-    state.data.reels      = d[CONFIG.TABS.REELS]      || [];
-    state.data.whatsapp   = d[CONFIG.TABS.WHATSAPP]   || [];
-    state.data.stories    = d[CONFIG.TABS.STORIES]    || [];
-    state.data.emails     = d[CONFIG.TABS.EMAILS]     || [];
-    state.data.calendario = d[CONFIG.TABS.CALENDARIO] || [];
-    state.data.carruseles = d[CONFIG.TABS.CARRUSELES] || [];
-    state.data.web        = d[CONFIG.TABS.WEB]        || [];
+    function fixSemanas(arr) {
+      return (arr || []).map(function(r) {
+        if (r.semana) r.semana = normalizeSemana(r.semana);
+        return r;
+      });
+    }
+    state.data.estrategia = fixSemanas(d[CONFIG.TABS.ESTRATEGIA]);
+    state.data.productos  = fixSemanas(d[CONFIG.TABS.PRODUCTOS]);
+    state.data.reels      = fixSemanas(d[CONFIG.TABS.REELS]);
+    state.data.whatsapp   = fixSemanas(d[CONFIG.TABS.WHATSAPP]);
+    state.data.stories    = fixSemanas(d[CONFIG.TABS.STORIES]);
+    state.data.emails     = fixSemanas(d[CONFIG.TABS.EMAILS]);
+    state.data.calendario = fixSemanas(d[CONFIG.TABS.CALENDARIO]);
+    state.data.carruseles = fixSemanas(d[CONFIG.TABS.CARRUSELES]);
+    state.data.web        = fixSemanas(d[CONFIG.TABS.WEB]);
 
     state.error = null;
     populateWeekSelector();
@@ -73,6 +79,18 @@ async function loadAllData() {
 }
 
 // ---- Helpers de semana -------------------------------------
+
+// Limpia variantes corruptas del campo semana que vienen del sheet:
+// "20262026" → "2026", "2026 2026" → "2026", "may 2026o" → "mayo", etc.
+function normalizeSemana(str) {
+  if (!str) return str;
+  return str
+    .replace(/\b(20\d{2})\1\b/g, '$1')       // 20262026 → 2026
+    .replace(/\b(20\d{2})\s+\1\b/g, '$1')    // 2026 2026 → 2026
+    .replace(/\bmay\s+\d{4}o\b/gi, 'mayo')   // "may 2026o" → "mayo"
+    .replace(/\s{2,}/g, ' ')                  // espacios dobles
+    .trim();
+}
 
 // Extrae la fecha de fin de un string de semana como "Semana 3 (2–8 jun 2026)"
 function parseSemanaEndDate(semanaStr) {
