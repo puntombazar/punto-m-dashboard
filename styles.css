@@ -765,7 +765,8 @@ details[open] .performance-summary::before { transform: rotate(90deg); }
   .tab-btn { padding: 5px 12px; font-size: 12px; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .stat-number { font-size: 28px; }
-  .card-header { padding: 14px 16px 12px; }
+  .card-header { padding: 14px 16px 12px; flex-wrap: wrap; }
+  .card-badges { flex-shrink: 1; }
   .card-body { padding: 14px 16px; }
   .performance-form { grid-template-columns: repeat(2, 1fr); }
   .productos-grid { grid-template-columns: 1fr; }
@@ -773,6 +774,15 @@ details[open] .performance-summary::before { transform: rotate(90deg); }
   .cal-day { font-size: 22px; }
   .page-title { font-size: 22px; }
   .variantes-tabs { flex-wrap: wrap; }
+
+  /* Web: fecha en una línea, badges en la siguiente */
+  .web-card .card-header { flex-direction: column; gap: 8px; }
+  .web-fecha { font-size: 11px; white-space: normal; line-height: 1.3; }
+
+  /* Vista Semanal: header stacks verticalmente en mobile */
+  .vs-semana-header { flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 14px; }
+  .vs-semana-title  { font-size: 13px; }
+  .vs-semana-meta   { font-size: 11px; }
 }
 
 @media (max-width: 380px) {

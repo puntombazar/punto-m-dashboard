@@ -52,11 +52,13 @@ async function loadAllData() {
     if (!json.success) throw new Error(json.error || 'Error del servidor');
 
     var d = json.data;
+    function fixRow(r) {
+      if (r.semana) r.semana = normalizeSemana(r.semana);
+      if (r.fecha)  r.fecha  = normalizeFecha(r.fecha);
+      return r;
+    }
     function fixSemanas(arr) {
-      return (arr || []).map(function(r) {
-        if (r.semana) r.semana = normalizeSemana(r.semana);
-        return r;
-      });
+      return (arr || []).map(fixRow);
     }
     state.data.estrategia = fixSemanas(d[CONFIG.TABS.ESTRATEGIA]);
     state.data.productos  = fixSemanas(d[CONFIG.TABS.PRODUCTOS]);
@@ -78,7 +80,21 @@ async function loadAllData() {
   showLoading(false);
 }
 
-// ---- Helpers de semana -------------------------------------
+// ---- Helpers de fecha y semana -----------------------------
+
+// Convierte cualquier formato de fecha a dd/MM/yyyy
+// Maneja: "dd/MM/yyyy" (ya correcto), "Mon May 11 2026 ..." (Date.toString)
+function normalizeFecha(str) {
+  if (!str) return str;
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) return str; // ya correcto
+  var d = new Date(str);
+  if (!isNaN(d.getTime())) {
+    var dd = String(d.getDate()).padStart(2, '0');
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    return dd + '/' + mm + '/' + d.getFullYear();
+  }
+  return str;
+}
 
 // Limpia variantes corruptas del campo semana que vienen del sheet:
 // "20262026" → "2026", "2026 2026" → "2026", "may 2026o" → "mayo", etc.
