@@ -10,8 +10,6 @@
 </head>
 <body>
   <div id="app">
-
-    <!-- HEADER -->
     <header class="header">
       <div class="header-inner">
         <div class="header-brand">
@@ -22,6 +20,11 @@
           </div>
         </div>
         <div class="header-controls">
+          <label class="toggle-past" title="Ocultar semanas cuya fecha de fin ya pasó">
+            <input type="checkbox" id="hide-past-toggle">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <span class="toggle-label">Ocultar pasadas</span>
+          </label>
           <select id="week-selector" class="week-selector">
             <option value="all">Todas las semanas</option>
           </select>
@@ -29,11 +32,10 @@
         </div>
       </div>
     </header>
-
-    <!-- TAB NAVIGATION -->
     <nav class="tab-nav">
       <div class="tab-nav-scroll">
         <button class="tab-btn active" data-tab="resumen">Resumen</button>
+        <button class="tab-btn" data-tab="vista-semanal">Vista Semanal</button>
         <button class="tab-btn" data-tab="estrategia">Estrategia</button>
         <button class="tab-btn" data-tab="web">Web</button>
         <button class="tab-btn" data-tab="reels">Reels</button>
@@ -46,14 +48,10 @@
         <button class="tab-btn" data-tab="productos">Productos</button>
       </div>
     </nav>
-
-    <!-- LOADING -->
     <div id="loading" class="loading-state">
       <div class="spinner"></div>
       <p>Cargando datos del sheet...</p>
     </div>
-
-    <!-- ERROR -->
     <div id="error-state" class="error-state hidden">
       <p class="state-icon">⚠️</p>
       <h3>No se pudo conectar al sheet</h3>
@@ -61,13 +59,8 @@
       <button onclick="loadAllData()" class="btn btn-primary">Reintentar</button>
       <p class="error-hint">Verificá que la URL del Apps Script esté correcta en <code>app.js → CONFIG.API_URL</code></p>
     </div>
-
-    <!-- MAIN CONTENT -->
     <main id="content" class="content hidden"></main>
-
-    <!-- TOAST -->
     <div id="toast" class="toast hidden">✓ Copiado al portapapeles</div>
-
   </div>
   <script src="app.js"></script>
 </body>
