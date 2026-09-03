@@ -685,10 +685,10 @@ function renderStoryItem(s) {
     (s.imagenAbrirUrl ? '<a href="' + escAttr(s.imagenAbrirUrl) + '" target="_blank" class="product-link" style="display:inline-block;margin-bottom:8px">Abrir en Drive →</a>' : '') +
     (s.copiar && s.copiar.length
       ? s.copiar.map(function(c) {
-          return '<div class="field-row" style="display:flex;align-items:center;justify-content:space-between;gap:8px">' +
-            '<div><span class="field-label">' + escHtml(c.label) + '</span>' +
+          return '<div style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">' +
+            '<div style="flex:1;min-width:0"><span class="field-label">' + escHtml(c.label) + '</span>' +
             '<p class="field-value">' + escHtml(c.texto) + '</p></div>' +
-            '<button class="btn btn-secondary btn-copy" data-copy="' + escAttr(c.texto) + '">📋 Copiar</button>' +
+            '<button class="btn btn-secondary btn-copy" style="flex-shrink:0" data-copy="' + escAttr(c.texto) + '">📋 Copiar</button>' +
           '</div>';
         }).join('')
       : '') +
