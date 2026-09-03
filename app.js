@@ -397,6 +397,43 @@ function renderVistaSemanal() {
 // TAB: WEB
 // ============================================================
 // Sección "Hero de la semana" — imágenes directo de Drive, sin texto (ya viene en la imagen)
+// Agrupa "01-HERO-DESKTOP.png" + "01-HERO-MOBILE.png" en un solo objeto por número de Hero
+function agruparHeroPorNumero_(imagenes) {
+  var grupos = [];
+  var porNumero = {};
+  imagenes.forEach(function(img) {
+    var m = img.nombre.match(/^(\d+)-HERO-(DESKTOP|MOBILE)/i);
+    var numero = m ? m[1] : '?';
+    var formato = m ? m[2].toUpperCase() : 'OTRO';
+    if (!porNumero[numero]) {
+      porNumero[numero] = { numero: numero, desktop: null, mobile: null, otros: [] };
+      grupos.push(porNumero[numero]);
+    }
+    if (formato === 'DESKTOP') porNumero[numero].desktop = img;
+    else if (formato === 'MOBILE') porNumero[numero].mobile = img;
+    else porNumero[numero].otros.push(img);
+  });
+  grupos.sort(function(a, b) { return a.numero.localeCompare(b.numero, undefined, { numeric: true }); });
+  return grupos;
+}
+
+function renderHeroImg_(img, ancho) {
+  if (!img) return '<p style="font-size:12px;color:var(--texto-suave);font-style:italic">Falta este formato</p>';
+  return '<a href="' + escAttr(img.imagenAbrirUrl) + '" target="_blank">' +
+    '<img src="' + escAttr(img.imagenPreviewUrl) + '" alt="' + escAttr(img.nombre) + '" ' +
+    'style="width:' + ancho + 'px;max-width:100%;border-radius:8px;display:block" /></a>';
+}
+
+function renderHeroGrupo_(g) {
+  return '<div style="display:flex;flex-direction:column;gap:6px">' +
+    '<span style="font-weight:600;font-size:13px">Hero #' + escHtml(g.numero) + '</span>' +
+    '<div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">' +
+      '<div><span class="field-label">Desktop</span>' + renderHeroImg_(g.desktop, 220) + '</div>' +
+      '<div><span class="field-label">Mobile</span>' + renderHeroImg_(g.mobile, 110) + '</div>' +
+    '</div>' +
+  '</div>';
+}
+
 function renderHeroSection() {
   var semanas = state.hidePast
     ? state.data.hero.filter(function(h) { return isDiaFuturo(h.fecha); })
@@ -410,12 +447,8 @@ function renderHeroSection() {
       semanas.map(function(sem) {
         return '<div style="margin-bottom:12px">' +
           '<span class="field-label">Semana del ' + escHtml(sem.fecha) + '</span>' +
-          '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px">' +
-            sem.imagenes.map(function(img) {
-              return '<a href="' + escAttr(img.imagenAbrirUrl) + '" target="_blank">' +
-                '<img src="' + escAttr(img.imagenPreviewUrl) + '" alt="' + escAttr(img.nombre) + '" ' +
-                'style="width:140px;height:140px;object-fit:cover;border-radius:8px;display:block" /></a>';
-            }).join('') +
+          '<div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:6px">' +
+            agruparHeroPorNumero_(sem.imagenes).map(renderHeroGrupo_).join('') +
           '</div>' +
         '</div>';
       }).join('') +
