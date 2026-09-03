@@ -3,7 +3,7 @@
 // ============================================================
 
 const CONFIG = {
-  API_URL: 'https://script.google.com/macros/s/AKfycbzMLr3-9GUyKbScWlDyF_21X2lumlPl9OZqJ2WPEd8XOPNCXgComIW_COId4Yopll57wQ/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbyXKwmizQYKy6vRrG2jyc89PEnxIvwx7Wl4u4JpVALB5Z6cdwYqcZsXsfap9ZzZY_dR1A/exec',
   TABS: {
     ESTRATEGIA: '01_ESTRATEGIA_MENSUAL',
     PRODUCTOS:  '02_PRODUCTOS',
