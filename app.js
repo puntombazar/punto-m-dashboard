@@ -646,31 +646,64 @@ function renderWhatsapp() {
 // TAB: STORIES
 // ============================================================
 function renderStories() {
-  var rows = filterBySemana(state.data.stories);
-  if (!rows.length) return emptyState('Sin stories para esta semana.');
+  var rows = state.hidePast
+    ? state.data.stories.filter(function(s) { return isDiaFuturo(s.fecha); })
+    : state.data.stories;
 
-  var typeColor = { PRODUCT_CARD: 'sage', COMUNIDAD: 'beige', HOOK: 'terracota' };
+  if (!rows.length) return emptyState('Sin stories cargadas.');
+
+  // agrupa por fecha (las filas ya vienen ordenadas por fecha desde el backend)
+  var dias = [];
+  var porFecha = {};
+  rows.forEach(function(s) {
+    if (!porFecha[s.fecha]) {
+      porFecha[s.fecha] = { fecha: s.fecha, stories: [] };
+      dias.push(porFecha[s.fecha]);
+    }
+    porFecha[s.fecha].stories.push(s);
+  });
 
   return '<div class="page"><div class="page-header"><h2 class="page-title">Stories</h2></div>' +
-    rows.map(function(r) {
-      var copyText = [r.hook, r.texto_visual, r.texto_apoyo, r.cta].filter(Boolean).join('\n\n');
-      return '<div class="story-card card">' +
-        '<div class="card-header">' +
-          '<div><span class="story-fecha">' + escHtml(r.fecha || '') + '</span>' +
-          (r.producto ? '<h3 class="card-title">' + escHtml(r.producto) + '</h3>' : '') +
-          '</div>' +
-          (r.tipo_story ? badge(r.tipo_story, typeColor[r.tipo_story] || 'beige') : '') +
-        '</div>' +
+    dias.map(function(dia) {
+      return '<div class="story-day card">' +
+        '<div class="card-header"><h3 class="card-title">' + escHtml(dia.fecha) + '</h3></div>' +
         '<div class="card-body">' +
-          (r.hook         ? '<div class="hook-box"><span class="field-label">Hook</span><p class="hook-text">' + escHtml(r.hook) + '</p></div>' : '') +
-          (r.texto_visual ? fieldRow('Texto visual', r.texto_visual) : '') +
-          (r.texto_apoyo  ? fieldRow('Texto apoyo',  r.texto_apoyo)  : '') +
-          (r.cta          ? '<div class="cta-section"><span class="field-label">CTA</span><p class="cta-text">' + escHtml(r.cta) + '</p></div>' : '') +
-          (r.link         ? '<a href="' + escAttr(r.link) + '" target="_blank" class="product-link">Ver producto →</a>' : '') +
-          '<div class="card-actions"><button class="btn btn-secondary btn-copy" data-copy="' + escAttr(copyText) + '">📋 Copiar story</button></div>' +
+          dia.stories.map(renderStoryItem).join('') +
         '</div></div>';
     }).join('') + '</div>';
 }
+
+function renderStoryItem(s) {
+  return '<div class="story-item" style="padding:12px 0;border-top:1px solid var(--borde, #e5e0d8)">' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+      '<span style="font-weight:600">#' + escHtml(s.numero) + '</span>' +
+      badge(s.tipo, 'beige') +
+    '</div>' +
+    (s.imagenPreviewUrl
+      ? '<img src="' + escAttr(s.imagenPreviewUrl) + '" alt="' + escAttr(s.tipo) + '" style="max-width:220px;width:100%;border-radius:8px;display:block;margin-bottom:8px" />'
+      : '<p style="font-size:13px;color:var(--texto-suave);font-style:italic;margin-bottom:8px">Repost manual — sin imagen, compartir el Reel desde Instagram.</p>') +
+    (s.imagenAbrirUrl ? '<a href="' + escAttr(s.imagenAbrirUrl) + '" target="_blank" class="product-link" style="display:inline-block;margin-bottom:8px">Abrir en Drive →</a>' : '') +
+    (s.copiar && s.copiar.length
+      ? s.copiar.map(function(c) {
+          return '<div class="field-row" style="display:flex;align-items:center;justify-content:space-between;gap:8px">' +
+            '<div><span class="field-label">' + escHtml(c.label) + '</span>' +
+            '<p class="field-value">' + escHtml(c.texto) + '</p></div>' +
+            '<button class="btn btn-secondary btn-copy" data-copy="' + escAttr(c.texto) + '">📋 Copiar</button>' +
+          '</div>';
+        }).join('')
+      : '') +
+  '</div>';
+}
+
+// Compara una fecha "DD-MM-YYYY" contra hoy (usa el mismo criterio que
+// isSemanaFutura pero a nivel de día, ya que Stories no tiene "semana")
+function isDiaFuturo(fechaStr) {
+  var partes = (fechaStr || '').split('-');
+  if (partes.length !== 3) return true; // si no se puede parsear, no ocultar
+  var d = new Date(Number(partes[2]), Number(partes[1]) - 1, Number(partes[0]), 23, 59, 59);
+  return d >= new Date();
+}
+
 
 // ============================================================
 // TAB: CARRUSELES
