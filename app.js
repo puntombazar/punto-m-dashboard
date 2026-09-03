@@ -20,7 +20,7 @@ const CONFIG = {
 const state = {
   data: {
     estrategia: [], productos: [], reels: [],
-    whatsapp: [], stories: [], emails: [], calendario: [], carruseles: [], web: []
+    whatsapp: [], stories: [], emails: [], calendario: [], carruseles: [], web: [], hero: []
   },
   currentTab: 'resumen',
   selectedSemana: 'all',
@@ -69,6 +69,7 @@ async function loadAllData() {
     state.data.calendario = fixSemanas(d[CONFIG.TABS.CALENDARIO]);
     state.data.carruseles = fixSemanas(d[CONFIG.TABS.CARRUSELES]);
     state.data.web        = fixSemanas(d[CONFIG.TABS.WEB]);
+    state.data.hero       = d.HERO || [];
 
     state.error = null;
     populateWeekSelector();
@@ -395,11 +396,42 @@ function renderVistaSemanal() {
 // ============================================================
 // TAB: WEB
 // ============================================================
+// Sección "Hero de la semana" — imágenes directo de Drive, sin texto (ya viene en la imagen)
+function renderHeroSection() {
+  var semanas = state.hidePast
+    ? state.data.hero.filter(function(h) { return isDiaFuturo(h.fecha); })
+    : state.data.hero;
+
+  if (!semanas.length) return '';
+
+  return '<div class="card" style="margin-bottom:16px">' +
+    '<div class="card-header"><h3 class="card-title">Hero de la semana</h3></div>' +
+    '<div class="card-body">' +
+      semanas.map(function(sem) {
+        return '<div style="margin-bottom:12px">' +
+          '<span class="field-label">Semana del ' + escHtml(sem.fecha) + '</span>' +
+          '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px">' +
+            sem.imagenes.map(function(img) {
+              return '<a href="' + escAttr(img.imagenAbrirUrl) + '" target="_blank">' +
+                '<img src="' + escAttr(img.imagenPreviewUrl) + '" alt="' + escAttr(img.nombre) + '" ' +
+                'style="width:140px;height:140px;object-fit:cover;border-radius:8px;display:block" /></a>';
+            }).join('') +
+          '</div>' +
+        '</div>';
+      }).join('') +
+    '</div></div>';
+}
+
 function renderWeb() {
   var rows = filterBySemana(state.data.web).slice().sort(function(a, b) {
     return parseFecha(a.fecha) - parseFecha(b.fecha);
   });
-  if (!rows.length) return emptyState('Sin recomendaciones web para esta semana.');
+
+  var heroHtml = renderHeroSection();
+
+  if (!rows.length) {
+    return heroHtml || emptyState('Sin recomendaciones web para esta semana.');
+  }
 
   var prioColor   = { ALTA: 'terracota', MEDIA: 'sage', BAJA: 'beige' };
   var actionColor = {
@@ -408,6 +440,7 @@ function renderWeb() {
   };
 
   return '<div class="page"><div class="page-header"><h2 class="page-title">Web</h2></div>' +
+    heroHtml +
     rows.map(function(r) {
       var titleParts    = [r.seccion_recife, r.pagina].filter(Boolean).join(' · ');
       var subtitleParts = [r.tipo_elemento, r.ubicacion_actual].filter(Boolean).join(' · ');
