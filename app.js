@@ -659,6 +659,8 @@ function renderWhatsapp() {
 
   return '<div class="page"><div class="page-header"><h2 class="page-title">WhatsApp</h2></div>' +
     rows.map(function(r) {
+      var waYaTieneLink = r.link && r.copy && r.copy.indexOf(r.link) !== -1;
+      var waCopyCompleto = (r.copy || '') + (r.link && !waYaTieneLink ? '\n\n' + r.link : '');
       return '<div class="wa-card card">' +
         '<div class="card-header">' +
           '<div><span class="wa-fecha">' + escHtml(r.fecha || '') + '</span>' +
@@ -669,7 +671,7 @@ function renderWhatsapp() {
           '<div class="wa-copy-box"><pre class="wa-copy-text">' + escHtml(r.copy || '') + '</pre></div>' +
           (r.link ? '<a href="' + escAttr(r.link) + '" target="_blank" class="product-link">Ver producto →</a>' : '') +
           '<div class="card-actions">' +
-            '<button class="btn btn-primary btn-copy" data-copy="' + escAttr((r.copy || '') + (r.link ? '\n\n' + r.link : '')) + '">📋 Copiar WhatsApp</button>' +
+            '<button class="btn btn-primary btn-copy" data-copy="' + escAttr(waCopyCompleto) + '">📋 Copiar WhatsApp</button>' +
           '</div>' +
         '</div></div>';
     }).join('') + '</div>';
