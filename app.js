@@ -428,8 +428,8 @@ function renderHeroGrupo_(g) {
   return '<div style="display:flex;flex-direction:column;gap:6px">' +
     '<span style="font-weight:600;font-size:13px">Hero #' + escHtml(g.numero) + '</span>' +
     '<div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">' +
-      '<div><span class="field-label">Desktop</span>' + renderHeroImg_(g.desktop, 220) + '</div>' +
-      '<div><span class="field-label">Mobile</span>' + renderHeroImg_(g.mobile, 110) + '</div>' +
+      '<div><span class="field-label">Desktop</span>' + renderHeroImg_(g.desktop, 300) + '</div>' +
+      '<div><span class="field-label">Mobile</span>' + renderHeroImg_(g.mobile, 170) + '</div>' +
     '</div>' +
   '</div>';
 }
