@@ -776,6 +776,33 @@ function isDiaFuturo(fechaStr) {
 // ============================================================
 // TAB: CARRUSELES
 // ============================================================
+// Imágenes en su formato original, ordenadas por nombre de archivo.
+function renderCarruselImagenes(r) {
+  // Compatible con el despliegue anterior mientras se actualiza el Script.
+  if (!r.estadoImagenes && !Array.isArray(r.imagenes)) return '';
+  var imagenes = (r.imagenes || []).slice().sort(function(a, b) {
+    return a.nombre.localeCompare(b.nombre, 'es', { numeric: true, sensitivity: 'base' });
+  });
+  var folder = r.carpetaUrl ? '<a href="' + escHtml(r.carpetaUrl) +
+    '" target="_blank" rel="noopener noreferrer" class="product-link">Abrir carpeta del carrusel →</a>' : '';
+  var message = r.estadoImagenes === 'error' ? 'No se pudieron cargar las imágenes. Probá actualizar.'
+    : r.estadoImagenes === 'sin_carpeta' ? 'Todavía no hay carpeta de imágenes para esta fecha.'
+    : 'Todavía no hay imágenes cargadas para este carrusel.';
+  return '<section aria-label="Imágenes del carrusel" style="margin-bottom:20px">' +
+    '<span class="field-label">Imágenes para publicar</span>' + folder +
+    (imagenes.length ? '<div style="display:flex;gap:16px;overflow-x:auto;padding:12px 0;align-items:flex-start">' +
+      imagenes.map(function(img, i) {
+        return '<figure style="margin:0;flex:0 0 240px;max-width:80vw">' +
+          '<a href="' + escHtml(img.imagenAbrirUrl) + '" target="_blank" rel="noopener noreferrer">' +
+          '<img src="' + escHtml(img.imagenPreviewUrl) + '" alt="' + escHtml(img.nombre) +
+          '" loading="lazy" style="display:block;width:100%;height:auto;border-radius:8px" /></a>' +
+          '<figcaption style="font-size:12px;margin-top:8px;overflow-wrap:anywhere">' +
+          escHtml(String(i + 1) + ' · ' + img.nombre) + '</figcaption>' +
+          '<a class="product-link" href="' + escHtml(img.imagenAbrirUrl) +
+          '" target="_blank" rel="noopener noreferrer">Abrir imagen en Drive →</a></figure>';
+      }).join('') + '</div>' : '<p>' + message + '</p>') + '</section>';
+}
+
 function renderCarruseles() {
   var rows = filterBySemana(state.data.carruseles);
   if (!rows.length) return '<div class="page"><div class="page-header"><h2 class="page-title">Carruseles</h2></div>' + emptyState('Sin carruseles para esta semana.') + '</div>';
@@ -832,6 +859,7 @@ function renderCarruseles() {
         '</div>' +
         '<div class="card-body">' +
           (r.objetivo ? '<p class="objetivo-text">' + escHtml(r.objetivo) + '</p>' : '') +
+          renderCarruselImagenes(r) +
           '<div class="carrusel-slides">' + slides + '</div>' +
           (r.caption   ? '<div class="caption-box"><span class="field-label">Caption</span><pre class="caption-text">' + escHtml(r.caption) + '</pre></div>' : '') +
           (r.hashtags  ? '<div class="hashtags-box"><span class="field-label">Hashtags</span><p class="hashtags-text">' + escHtml(r.hashtags) + '</p></div>' : '') +
