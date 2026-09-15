@@ -749,7 +749,7 @@ function renderStoryItem(s) {
     '</div>' +
     (s.imagenPreviewUrl
       ? '<img src="' + escAttr(s.imagenPreviewUrl) + '" alt="' + escAttr(s.tipo) + '" style="max-width:220px;width:100%;border-radius:8px;display:block;margin-bottom:8px" />'
-      : '<p style="font-size:13px;color:var(--texto-suave);font-style:italic;margin-bottom:8px">Repost manual — sin imagen, compartir el Reel desde Instagram.</p>') +
+      : '<p style="font-size:13px;color:var(--texto-suave);font-style:italic;margin-bottom:8px">' + (s.imagenEstado === 'pendiente' ? 'Imagen pendiente de cargar en Drive.' : 'Repost manual — sin imagen, compartir el Reel desde Instagram.') + '</p>') +
     (s.imagenAbrirUrl ? '<a href="' + escAttr(s.imagenAbrirUrl) + '" target="_blank" class="product-link" style="display:inline-block;margin-bottom:8px">Abrir en Drive →</a>' : '') +
     (s.copiar && s.copiar.length
       ? s.copiar.map(function(c) {
@@ -785,21 +785,28 @@ function renderCarruselImagenes(r) {
   });
   var folder = r.carpetaUrl ? '<a href="' + escHtml(r.carpetaUrl) +
     '" target="_blank" rel="noopener noreferrer" class="product-link">Abrir carpeta del carrusel →</a>' : '';
-  var message = r.estadoImagenes === 'error' ? 'No se pudieron cargar las imágenes. Probá actualizar.'
-    : r.estadoImagenes === 'sin_carpeta' ? 'Todavía no hay carpeta de imágenes para esta fecha.'
-    : 'Todavía no hay imágenes cargadas para este carrusel.';
-  return '<section aria-label="Imágenes del carrusel" style="margin-bottom:20px">' +
-    '<span class="field-label">Imágenes para publicar</span>' + folder +
+  var message = r.estadoImagenes === 'error' ? 'No se pudieron cargar los archivos. Probá actualizar.'
+    : r.estadoImagenes === 'sin_carpeta' ? 'Todavía no hay carpeta de archivos para esta fecha.'
+    : 'Todavía no hay imágenes o videos cargados para este carrusel.';
+  return '<section aria-label="Imágenes y videos del carrusel" style="margin-bottom:20px">' +
+    '<span class="field-label">Imágenes y videos para publicar</span>' + folder +
     (imagenes.length ? '<div style="display:flex;gap:16px;overflow-x:auto;padding:12px 0;align-items:flex-start">' +
       imagenes.map(function(img, i) {
+        var isVideo = img.tipoMedia === 'video';
+        var videoUrl = /^https:\/\/drive\.google\.com\/file\/d\/[A-Za-z0-9_-]+\/preview$/.test(img.videoPreviewUrl || '') ? img.videoPreviewUrl : '';
+        var preview = isVideo
+          ? (videoUrl ? '<iframe src="' + escHtml(videoUrl) + '" title="Video: ' + escHtml(img.nombre) +
+            '" loading="lazy" allow="fullscreen" allowfullscreen style="display:block;width:100%;height:300px;border:0;border-radius:8px;background:#111"></iframe>'
+            : '<p>Usá el enlace de Drive para reproducir este video.</p>')
+          : '<a href="' + escHtml(img.imagenAbrirUrl) + '" target="_blank" rel="noopener noreferrer">' +
+            '<img src="' + escHtml(img.imagenPreviewUrl) + '" alt="' + escHtml(img.nombre) +
+            '" loading="lazy" style="display:block;width:100%;height:auto;border-radius:8px" /></a>';
         return '<figure style="margin:0;flex:0 0 240px;max-width:80vw">' +
-          '<a href="' + escHtml(img.imagenAbrirUrl) + '" target="_blank" rel="noopener noreferrer">' +
-          '<img src="' + escHtml(img.imagenPreviewUrl) + '" alt="' + escHtml(img.nombre) +
-          '" loading="lazy" style="display:block;width:100%;height:auto;border-radius:8px" /></a>' +
+          preview +
           '<figcaption style="font-size:12px;margin-top:8px;overflow-wrap:anywhere">' +
           escHtml(String(i + 1) + ' · ' + img.nombre) + '</figcaption>' +
           '<a class="product-link" href="' + escHtml(img.imagenAbrirUrl) +
-          '" target="_blank" rel="noopener noreferrer">Abrir imagen en Drive →</a></figure>';
+          '" target="_blank" rel="noopener noreferrer">Abrir ' + (isVideo ? 'video' : 'imagen') + ' en Drive →</a></figure>';
       }).join('') + '</div>' : '<p>' + message + '</p>') + '</section>';
 }
 
